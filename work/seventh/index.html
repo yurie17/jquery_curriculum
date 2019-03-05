@@ -36,21 +36,21 @@
       // .length 要素の個数を取得します。
       $(function() {
 
-        var slideWidth = $('.slider-list').children('li').width();     //$('.slider-list').children('li').width()でslider-list要素の子要素を取得し,li要素の幅を取得した値をslideWidthという変数に代入しています。
-        var slideLength = $('.slider-list').children('li').length ;     //上と同じようにslider-list要素の子要素を取得し,li要素の個数を取得した値をslideLengthという変数に代入しています。
-        var origin = 0;  // ０で初期値を設定 現在地を示す変数
+        var slideWidth = $('.slider-list').children('li').width();   //$('.slider-list').children('li').width()でslider-list要素の子要素を取得し,li要素の幅を取得した値をslideWidthという変数に代入しています。
+        var slideLength = $('.slider-list').children('li').length ;   //上と同じようにslider-list要素の子要素を取得し,li要素の個数を取得した値をslideLength (4)という変数に代入しています。
+        var origin = 0;  //０で初期値を設定 現在地を示す変数
 
-        $('.slider-ctrl-btn').on('click',function() {                    //slider-ctrl-btnをクリックした時
-          var nextorprev = $(this).data('ctrl') ;                        //$(this).data('ctrl')で取得した値をnextorprevという変数に代入しています。
-          // origin == 0
-          if('next' === nextorprev) {                                      //nextとnextorprevが厳密に等しい
-            origin = origin == slideLength - 1 ? 0 : origin + 1;           //originとslideLength - 1が等しいなら０でなければorigin + 1 右に進む
-          } else if ('prev' === nextorprev) {                              //prevとnextorprevが厳密に等しい
-            origin = origin <= 0 ? slideLength - 1 : origin - 1;           //originが0以下ならslideLength - 1そうでなければorigin - 1
+        $('.slider-ctrl-btn').on('click',function() {            //slider-ctrl-btnをクリックした時
+          var nextorprev = $(this).data('ctrl') ;                //$(this).data('ctrl')で取得した値をnextorprevという変数に代入しています。
+          if('next' === nextorprev) {                            //nextとnextorprevが厳密に等しいか
+            origin = origin == slideLength - 1 ? 0 : origin + 1; //originの位置はとslideLength - 1が等しいなら０でなければorigin + 1 右に進む
+          } else if ('prev' === nextorprev) {                    //prevとnextorprevが厳密に等しいか
+            origin = origin <= 0 ? slideLength - 1 : origin - 1; //originの位置はoriginが0以下ならslideLength - 1そうでなければorigin - 1
           }
 
-          $('.slider-list').stop().animate( {                               //slider-listのアニメーション処理を全て中止します。
-            left: - slideWidth * origin                                     //スライド幅xオリジナルの長さ
+          $('.slider-list').stop().animate( {                    //slider-listのアニメーション処理を全て中止します。
+            left: -slideWidth * origin                          //左からのスライド幅x現在地
+
           });
         });
 

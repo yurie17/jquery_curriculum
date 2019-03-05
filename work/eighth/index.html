@@ -46,28 +46,29 @@
 
         var topBtn = $('.scrollTopBtn');
         //ページ内のスクロール
-        $('.menu__btn').on('click',function() {                  // onを使ってクリックイベントを発動する
-          var menuBtnData = $(this).data('scroll-place-type');  // $(this)という(menu__btn)のデータ属性取得している変数をmenuBtnDataに代入
-          $('.title').each(function(index , item) {              // eachに指定する関数は引数として『index』『item』を取得 title要素1つずつに対して繰り返し処理を行う
-            var data = $(item).data('scroll-place-type');        // $(item)という(title)のデータ属性取得している変数をdataに代入
-            var position = $(item).offset().top;                  //$(item)という(title)要素の位置を取得している変数をpositionに代入
-            //console.log(position);
-            if (data ===  menuBtnData) {                          //dataとmenuBtnDataを厳密に等しいか比較
-              $('html,body').animate({ scrollTop:position }) ;
+        $('.menu__btn').on('click',function() {
+          // onを使ってクリックイベントを発動する
+          var menuBtnData = $(this).data('scroll-place-type'); // $(this)という(menu__btn)のデータ属性取得している変数をmenuBtnDataに代入
+          $('.title').each(function(index , item) {            // eachに指定する関数は引数として『index』『item』を取得 title要素1つずつに対して繰り返し処理を行う
+            var data = $(item).data('scroll-place-type');      // $(item)という(title)のデータ属性取得したものをdataに代入
+            console.log(data);
+            var position = $(item).offset().top;               //$(item)という(title)要素の位置をoffset().topで取得しpositionに代入
+            if (data ===  menuBtnData) {                       //dataとmenuBtnDataを厳密に等しいか比較
+              $('html,body').animate({ scrollTop:position }) ; //等しかったらhtml,body要素 position位置までアニメーション
             }
           });
         });
           //スクロールが100に達したらボタン表示
-        $(window).on('scroll',function() {       //スクロールするとイベントが発生
-          if($(window).scrollTop() >= 100) {     //100以上スクロールしたとき
-            topBtn.fadeIn() ;                    //topBtn要素をフェードインさせる
-          } else {                               //100以下の場合
-            topBtn.fadeOut() ;                   //topBtn要素をフェードアウトさせる
+        $(window).on('scroll',function() {      //スクロールするとイベントが発生
+          if($(window).scrollTop() >= 100) {    //100以上スクロールしたとき
+            topBtn.fadeIn() ;                   //topBtn要素をフェードインさせる
+          } else {                              //100以下の場合
+            topBtn.fadeOut() ;                  //topBtn要素をフェードアウトさせる
           }
         });
         //スクロールしてトップ
-        topBtn.on('click',function() {                  //topBtn要素をクリックした時
-          $('html,body').animate({ scrollTop:0 }) ;    //html,body要素　０の位置までアニメーションでスクロール
+        topBtn.on('click',function() {               //topBtn要素をクリックした時
+          $('html,body').animate({ scrollTop:0 }) ;  //html,body要素　０の位置までアニメーションでスクロール
         });
 
       });
