@@ -45,6 +45,23 @@
       // </li>
       //
       // このテンプレートに取得してきたオブジェクトを流し込みます。
+      $(fanction(){
+        $.ajax({
+          url: './data.json'
+        }).done(function(data) {
+          var dataArray = data.colorsArray;               //data.colorsArrayでdata.jsonに入っている情報colorsArrayをdataArrayに代入
+          var text = '';                                  //空のボックス
+          $.each(dataArray, function(index,item) {        //複数の要素に対して、1回ずつ同じ処理を繰り返し実行する命令です
+            var textBar = item.colorName;                 //data.jsonにある情報colorNameをtextBarに代入
+            var colorBar = item.hexValue;                 ///data.jsonにある情報colorNameをcolorBarに代入
+            text += '<li class="colorList__item">' +
+                        '<p class="colorList__title" style="background-color:' + colorBar + ';">' + textBar + '</p>' + '</li>';
+                        //class="colorList__itemのclass="colorList__titleにstyle="background-colorでcolorBarとcolorNametextBarを指定
+          });
+          $('.colorList').html(text);                      //html(text)でtext要素をcolorListに出力
+        });
+      });
+
     </script>
   </body>
 </html>
