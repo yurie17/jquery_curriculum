@@ -1,189 +1,192 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="format-detection" content="telephone=no">
-    <title>jQuery</title>
-    <link rel="stylesheet" href="../../common/css/reset.css">
-    <link rel="stylesheet" href="../../common/css/base.css">
-    <link rel="stylesheet" href="./css/style.css">
-  </head>
-  <body>
-    <div class="wrap">
-      <div class="container">
-        <div class="header">
-          <p class="header__title">Search Books!</p>
-        </div>
-        <div class="search">
-          <div class="search__text">
-            <input type="text" id="js-search-word" class="search__text__input" placeholder="検索する">
-          </div>
-          <button id="js-search-button" class="search__btn">検索する</button>
-        </div>
-        <ul class="lists"></ul>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>jQuery</title>
+  <link rel="stylesheet" href="../../common/css/reset.css">
+  <link rel="stylesheet" href="../../common/css/base.css">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="container">
+      <div class="header">
+        <p class="header__title">Search Books!</p>
       </div>
+      <div class="search">
+        <div class="search__text">
+          <input type="text" id="js-search-word" class="search__text__input" placeholder="検索する">
+        </div>
+        <button id="js-search-button" class="search__btn">検索する</button>
+      </div>
+      <ul class="lists"></ul>
     </div>
-    <script src="../../common/js/jquery.js"></script>
-    <script>
+  </div>
+  <script src="../../common/js/jquery.js"></script>
+  <script>
 
 
 
-      $(function() {
-        $('#js-search-button').on('click',function() {                                  //js-search-buttonクリックして発生するイベント
-          btnClick();
-      });
+  $(function() {
+    $('#js-search-button').on('click',function() {                                  //js-search-buttonクリックして発生するイベント
+      btnClick();
+    });
 
-        var lastWord = '';                                                              //前回のワード
-        var pageNum = 1;                                                                //代入
-// ---------------------------------------------------------------------------------------------------------------
-      function btnClick() {                                                             //クリックしたとき
-        // console.log(lastWord);
-        // console.log(searchWord);
-        var searchWord = $('.search__text__input').val();                              //search__text__inputのvalue値取得したものをsearchWordに代入
-        if(lastWord ===  searchWord){                                                  //前回のワードと入力したワードがあっているか
-          pageNum += 1;                                                                //あっていたら、もともと表示されていた20件の上に表示されるように。
-        }else {                                                                        //違っていたら、
-          lastWord =  searchWord;                                                      //検索ワードを保存しなおして更新　前回ワード=入力した検索ワード
-          pageNum = 1;
-          Initialize();
-        }
-        ajaxData(searchWord);                                                          //ajaxData(searchWord)を読み込む
+    var lastWord = '';                                                              //前回のワード
+
+    var pageNum = 1;                                                                //代入
+    // ---------------------------------------------------------------------------------------------------------------
+    function btnClick() {                                                             //クリックしたとき
+      // console.log(lastWord);
+      // console.log(searchWord);
+      var searchWord = $('.search__text__input').val();                              //search__text__inputのvalue値取得したものをsearchWordに代入
+      if(lastWord ===  searchWord){                                                  //前回のワードと入力したワードがあっているか
+
+        pageNum += 1;                                                                //あっていたら、もともと表示されていた20件の上に表示されるように。
+      }else {                                                                        //違っていたら、
+        lastWord =  searchWord;                                                      //検索ワードを保存しなおして更新　前回ワード=入力した検索ワード
+        pageNum = 1;
+        Initialize();                                                                //初期化
       }
-          function Initialize(){                                                         //htmlの初期化
-            var remmes = $('.wrap').find('.message');                                    //メッセージを探す
-            if(remmes != null){                                                          //空
-              $('.wrap').find('.message').remove();                                      //エラーメッセージ削除
-            }
-            var emlis = $('.wrap').find('.lists');                                       //listをemlis代入
-            if(emlis != null){                                                           //空
-              $('.wrap').find('.lists').empty();                                         //要素全削除！
-            }
-          }
+      ajaxData(searchWord);                                                          //ajaxData(searchWord)を読み込む
+    }
+    function Initialize(){                                                         //htmlの初期化
+      var remmes = $('.wrap').find('.message');                                    //メッセージを探す
+      if(remmes != null){                                                          //
+        $('.wrap').find('.message').remove();                                      //エラーメッセージ削除
+      }
+      var emlis = $('.wrap').find('.lists');                                       //listをemlis代入
+      if(emlis != null && pageNum == 1){                                           //空じゃなかったら　またはページが1になったとき（戻った時）
+        $('.wrap').find('.lists').empty();                                         //要素全削除
+      }
+    }
 
-        // pageNum = pageNum + 1;
+    // pageNum = pageNum + 1;
 
 
 
 
-// ---------------------------------------------------------------------------------------------------------------
-        function ajaxData(searchWord){                                                   //入力した文字を楽天APIを使ってデータを読む
-          $.ajax({
-            url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
-            type: 'GET',
-            dataType: 'json',
-            data: {
-              // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
-                  applicationId: '1019399324990976605',
-                  booksGenreId: '001',
-                  hits : 20,
-                  page: pageNum,
-                  keyword: searchWord
-            },
-          }).done(function(data) {                                                   //正常に通信が出来た時
-            doneData(data);
-          }).fail(function(err) {                                                    //正常に通信できない時
-            failData(err,searchWord);
-          });
-        }
-
-// -------------------------------- データ通信成功の場合 ---------------------------------------------------------
-        function doneData(data) {                                                        //正常に通信が出来た時
-          console.log(data.count);
-          var dataDone = data.Items;                                                     //データの中の商品情報
-          if (data.hits === 0) {                                                         //ヒットしなかった時
-            $('.lists').html('<p class="message">検索結果が０件<br>キーワードを変えて検索</p>');   //htmlで表示
-          }
-          var allData = "";                                                              //空の箱
-          // $(".lists").empty();
-          $.each(dataDone, function(index,item) {                                        //index,item引数として取得
-            var book = item.Item;                                                        //個別商品　本
-            var title = book.title;                                                      //本の商品タイトル
-            var author = book.author;                                                    //本の著作名
-            var publisherName = book.publisherName;                                      //本のアーティスト名
-            var itemUrl = book.itemUrl;                                                  //本の商品のurl
-            var largeImageUrl = book.largeImageUrl;                                      //本の商品画像
-            allData += (`<li class='lists__item'>
-                            <div class='lists__item__inner'>
-                              <a href='${itemUrl}' class='lists__item__link' target='_blank'>
-                               <img src='${largeImageUrl}' class='lists__item__img' alt=''>
-                               <p class='lists__item__detail'>作品名：${title}</p>
-                               <p class='lists__item__detail'>作者　：${author}</p>
-                               <p class='lists__item__detail'>出版社：${publisherName}</p>
-                              </a>
-                            </div>
-                        </li>`);
-          });
-          $('.lists').html(allData);
-        }
-  // --------------------------- データ通信失敗の場合 --------------------------------------------------------------
-        function failData(err,searchWord){                                                                          //正常に通信できない時
-          // var dataFail = err.Items;
-          if (searchWord.length === 0) {                                                                            //入力の数が０と厳密に等しいか
-            $('.lists').html('<p class="message">文字が入力されていません<br>文字を入力して下さい</p>');            //入力された文字が０文字だったら
-          } else if (searchWord.length === 1) {                                                                     //入力の数が1と厳密に等しいか
-            $('.lists').html('<p class="message">1文字です。<br>２文字以上で入力</p>');                             //入力された文字が1文字だったら
-          } else {                                                                                                  //そのほかのエラー
-            $('.lists').html('<p class="message">接続されてますか？<br>接続確認しましょう。</p>');
-          }
-        }
-  // ------------------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------
+    function ajaxData(searchWord){                                                   //入力した文字を楽天APIを使ってデータを読む
+      $.ajax({
+        url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+          // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
+          applicationId: '1019399324990976605',
+          booksGenreId: '001',
+          hits : 20,
+          page: pageNum,
+          keyword: searchWord
+        },
+      }).done(function(data) {                                                   //正常に通信が出来た時
+        doneData(data);
+      }).fail(function(err) {                                                    //正常に通信できない時
+        failData(err,searchWord);
       });
+    }
+
+    // -------------------------------- データ通信成功の場合 ---------------------------------------------------------
+    function doneData(data) {                                                        //正常に通信が出来た時
+      console.log(data.count);
+      var dataDone = data.Items;                                                     //データの中の商品情報
+      if (data.hits === 0) {                                                         //ヒットしなかった時
+        $('.lists').html('<p class="message">検索結果が０件<br>キーワードを変えて検索</p>');   //htmlで表示
+      }
+      var allData ="";                                                              //空の箱
+      $.each(dataDone, function(index,item) {                                        //index,item引数として取得
+        var book = item.Item;                                                        //個別商品　本
+        var title = book.title;                                                      //本の商品タイトル
+        var author = book.author;                                                    //本の著作名
+        var publisherName = book.publisherName;                                      //本のアーティスト名
+        var itemUrl = book.itemUrl;                                                  //本の商品のurl
+        var largeImageUrl = book.largeImageUrl;                                      //本の商品画像
+        allData += (`<li class='lists__item'>
+        <div class='lists__item__inner'>
+        <a href='${itemUrl}' class='lists__item__link' target='_blank'>
+        <img src='${largeImageUrl}' class='lists__item__img' alt=''>
+        <p class='lists__item__detail'>作品名：${title}</p>
+        <p class='lists__item__detail'>作者　：${author}</p>
+        <p class='lists__item__detail'>出版社：${publisherName}</p>
+        </a>
+        </div>
+        </li>`);
+      });
+      var lastWord =$('.wrap').find('.lists').html();
+      allData += lastWord;
+      $('.lists').html(allData);
+    }
+    // --------------------------- データ通信失敗の場合 --------------------------------------------------------------
+    function failData(err,searchWord){                                                                          //正常に通信できない時
+      // var dataFail = err.Items;
+      if (searchWord.length === 0) {                                                                            //入力の数が０と厳密に等しいか
+        $('.lists').html('<p class="message">文字が入力されていません<br>文字を入力して下さい</p>');            //入力された文字が０文字だったら
+      } else if (searchWord.length === 1) {                                                                     //入力の数が1と厳密に等しいか
+        $('.lists').html('<p class="message">1文字です。<br>２文字以上で入力</p>');                             //入力された文字が1文字だったら
+      } else {                                                                                                  //そのほかのエラー
+        $('.lists').html('<p class="message">接続されてますか？<br>接続確認しましょう。</p>');
+      }
+    }
+    // ------------------------------------------------------------------------------------------------------------
+  });
   //--------------------------------------------------------------------------------------------------------------
-          /*
-          GETとPOSTの説明
-          GETを使ってデータ送信する場合、URLの後ろに送りたいデータを付与して送ります。
-          一方、POSTを使った場合、URLではなく、HTTPリクエスト内のメッセージボディというところにログインデータを入れて送られます。
+  /*
+  GETとPOSTの説明
+  GETを使ってデータ送信する場合、URLの後ろに送りたいデータを付与して送ります。
+  一方、POSTを使った場合、URLではなく、HTTPリクエスト内のメッセージボディというところにログインデータを入れて送られます。
 
-          この場合、GETを利用してログインするとURLにデータが組み込まれるため、送ったデータがブラウザの履歴に残ってしまいます。
-          つまり、ユーザー名やパスワードを盗み見られる可能性があります。
-          でもPOSTを利用してログインすれば、メッセージボディ内にデータが組み込まれるので、履歴にデータが残るということはありません。
-          なので、こちらからデータを入力してサーバに渡すときは機密性の高いPOSTメソッドを使います。
+  この場合、GETを利用してログインするとURLにデータが組み込まれるため、送ったデータがブラウザの履歴に残ってしまいます。
+  つまり、ユーザー名やパスワードを盗み見られる可能性があります。
+  でもPOSTを利用してログインすれば、メッセージボディ内にデータが組み込まれるので、履歴にデータが残るということはありません。
+  なので、こちらからデータを入力してサーバに渡すときは機密性の高いPOSTメソッドを使います。
 
-          api
-          Application Programming Interfaceの略称で、「プログラムからソフトウェアを操作するためのインターフェイス」のことです。
-          「インターフェイス」とはなんでしょうか。英語の意味としては「境界面」とか「共通領域」という意味があり、コンピュータの用語としては広義には「何かと何かをつなぐもの」という程度の意味があります。
-          APIという言葉を用いる文脈での「インターフェイス」は「ソフトウェアとプログラムをつなぐもの」と言うことができます。
-          */
+  api
+  Application Programming Interfaceの略称で、「プログラムからソフトウェアを操作するためのインターフェイス」のことです。
+  「インターフェイス」とはなんでしょうか。英語の意味としては「境界面」とか「共通領域」という意味があり、コンピュータの用語としては広義には「何かと何かをつなぐもの」という程度の意味があります。
+  APIという言葉を用いる文脈での「インターフェイス」は「ソフトウェアとプログラムをつなぐもの」と言うことができます。
+  */
   //----------------------------------------------------------------------------------------------------------------
-      // 楽天ブックスの総合検索APIを使って製作してください。
-      // answerの挙動を良く見てね！
-      //
-      // https://webservice.rakuten.co.jp/api/bookstotalsearch/
-      //
-      // $.ajax と $.each を調べてみてください
-      // 以下は今回使う$.ajaxの基本的な形です。
-      //
-      // $.ajaxによってデータが取得できたら、必要なデータ(作品名とか作者名とか)を取得します。
-      // 取得できたらDOM上に<ul class='lists'></ul>を用意しているので、その中に下のテンプレに沿ってデータを入れ込みましょう。
-      // <li class='lists__item'>
-      //  <div class='lists__item__inner'>
-      //    <a href='' class='lists__item__link' target='_blank'>
-      //      <img src='' class='lists__item__img' alt=''>
-      //      <p class='lists__item__detail'>作品名：</p>
-      //      <p class='lists__item__detail'>作者　：</p>
-      //      <p class='lists__item__detail'>出版社：</p>
-      //    </a>
-      //  </div>
-      // </li>
-      //
-      // オブジェクトで取得したデータへのアクセス方法 以下参考程度に
-      // http://qiita.com/marumaru8228/items/65fc684383b096f0e548
-      //
-      //
-      // $.ajax({
-      //   url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
-      //   type: 'GET',
-      //   datatype: 'json',
-      //   data: {
-      //     // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
-      //     applicationId: '1019399324990976605', // (今回はこのIDを使用してください)
-      //     booksGenreId: '001'
-      //   },
-      // }).done(function(data) {
-      //   // この中にデータ取得後の動きを記述していきます。
-      // });
-      //
-    </script>
-  </body>
+  // 楽天ブックスの総合検索APIを使って製作してください。
+  // answerの挙動を良く見てね！
+  //
+  // https://webservice.rakuten.co.jp/api/bookstotalsearch/
+  //
+  // $.ajax と $.each を調べてみてください
+  // 以下は今回使う$.ajaxの基本的な形です。
+  //
+  // $.ajaxによってデータが取得できたら、必要なデータ(作品名とか作者名とか)を取得します。
+  // 取得できたらDOM上に<ul class='lists'></ul>を用意しているので、その中に下のテンプレに沿ってデータを入れ込みましょう。
+  // <li class='lists__item'>
+  //  <div class='lists__item__inner'>
+  //    <a href='' class='lists__item__link' target='_blank'>
+  //      <img src='' class='lists__item__img' alt=''>
+  //      <p class='lists__item__detail'>作品名：</p>
+  //      <p class='lists__item__detail'>作者　：</p>
+  //      <p class='lists__item__detail'>出版社：</p>
+  //    </a>
+  //  </div>
+  // </li>
+  //
+  // オブジェクトで取得したデータへのアクセス方法 以下参考程度に
+  // http://qiita.com/marumaru8228/items/65fc684383b096f0e548
+  //
+  //
+  // $.ajax({
+  //   url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+  //   type: 'GET',
+  //   datatype: 'json',
+  //   data: {
+  //     // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
+  //     applicationId: '1019399324990976605', // (今回はこのIDを使用してください)
+  //     booksGenreId: '001'
+  //   },
+  // }).done(function(data) {
+  //   // この中にデータ取得後の動きを記述していきます。
+  // });
+  //
+  </script>
+</body>
 </html>
